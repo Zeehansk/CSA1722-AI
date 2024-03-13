@@ -1,0 +1,80 @@
+from collections import deque
+
+class State:
+    def __init__(self, m, c, b):
+        self.missionaries = m
+        self.cannibals = c
+        self.boat = b
+
+    def is_valid(self):
+        if self.missionaries < 0 or self.missionaries > 3 or self.cannibals < 0 or self.cannibals > 3:
+            return False
+        if self.missionaries < self.cannibals and self.missionaries > 0:
+            return False
+        if 3 - self.missionaries < 3 - self.cannibals and 3 - self.missionaries > 0:
+            return False
+        return True
+
+    def __eq__(self, other):
+        return self.missionaries == other.missionaries and self.cannibals == other.cannibals and self.boat == other.boat
+
+    def __hash__(self):
+        return hash((self.missionaries, self.cannibals, self.boat))
+
+def is_goal(state):
+    return state.missionaries == 0 and state.cannibals == 0 and state.boat == 0
+
+def successors(state):
+    children = []
+    if state.boat == 1:
+        # Boat is on the left side, moving to the right side
+        children.append(State(state.missionaries - 1, state.cannibals, 0))
+        children.append(State(state.missionaries, state.cannibals - 1, 0))
+        children.append(State(state.missionaries - 2, state.cannibals, 0))
+        children.append(State(state.missionaries, state.cannibals - 2, 0))
+        children.append(State(state.missionaries - 1, state.cannibals - 1, 0))
+    else:
+        # Boat is on the right side, moving to the left side
+        children.append(State(state.missionaries + 1, state.cannibals, 1))
+        children.append(State(state.missionaries, state.cannibals + 1, 1))
+        children.append(State(state.missionaries + 2, state.cannibals, 1))
+        children.append(State(state.missionaries, state.cannibals + 2, 1))
+        children.append(State(state.missionaries + 1, state.cannibals + 1, 1))
+    return [child for child in children if child.is_valid()]
+
+def bfs():
+    initial_state = State(3, 3, 1)
+    if is_goal(initial_state):
+        return initial_state
+    visited = set()
+    queue = deque([initial_state])
+    while queue:
+        state = queue.popleft()
+        if is_goal(state):
+            return state
+        visited.add(state)
+        for child in successors(state):
+            if child not in visited:
+                queue.append(child)
+    return None
+
+def print_solution(solution):
+    path = []
+    while solution:
+        path.append(solution)
+        solution = solution.parent
+    for t in reversed(path):
+        side = "left" if t.boat == 1 else "right"
+        print(f"{t.missionaries}M-{t.cannibals}C ({side})")
+
+# Main function
+def main():
+    solution = bfs()
+    if solution:
+        print("Solution found:")
+        print_solution(solution)
+    else:
+        print("No solution found.")
+
+if __name__ == "__main__":
+    main()
