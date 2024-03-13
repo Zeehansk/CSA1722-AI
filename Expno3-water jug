@@ -1,0 +1,31 @@
+from collections import deque
+
+class State:
+    def __init__(self, x, y):
+        self.x = x  # Current water in the first jug
+        self.y = y  # Current water in the second jug
+
+def is_valid(x, y, x_limit, y_limit):
+    return 0 <= x <= x_limit and 0 <= y <= y_limit
+
+def bfs(x_limit, y_limit, target):
+    visited = set()
+    queue = deque()
+    initial_state = State(0, 0)
+    queue.append(initial_state)
+    visited.add((initial_state.x, initial_state.y))
+
+    while queue:
+        current_state = queue.popleft()
+
+        if current_state.x == target or current_state.y == target:
+            return True
+
+        # Empty the first jug
+        if (0, current_state.y) not in visited:
+            queue.append(State(0, current_state.y))
+            visited.add((0, current_state.y))
+
+        # Empty the second jug
+        if (current_state.x, 0) not in visited:
+            queue.append(State(current_state.x, 
