@@ -1,0 +1,48 @@
+import random
+
+class VacuumCleaner:
+    def __init__(self):
+        self.location = random.choice(['A', 'B'])
+
+    def move(self):
+        self.location = random.choice(['A', 'B'])
+
+    def clean(self):
+        print(f"Cleaning room {self.location}")
+
+class Environment:
+    def __init__(self):
+        self.room_A = random.choice(['dirty', 'clean'])
+        self.room_B = random.choice(['dirty', 'clean'])
+
+    def is_dirty(self, room):
+        if room == 'A':
+            return self.room_A == 'dirty'
+        elif room == 'B':
+            return self.room_B == 'dirty'
+
+    def dirty_rooms(self):
+        dirty = []
+        if self.is_dirty('A'):
+            dirty.append('A')
+        if self.is_dirty('B'):
+            dirty.append('B')
+        return dirty
+
+def main():
+    vacuum = VacuumCleaner()
+    environment = Environment()
+
+    print("Initial state:")
+    print(f"Vacuum cleaner is in room {vacuum.location}")
+    print(f"Room A is {environment.room_A}")
+    print(f"Room B is {environment.room_B}")
+
+    while True:
+        dirty_rooms = environment.dirty_rooms()
+        if not dirty_rooms:
+            print("Both rooms are clean. Mission accomplished!")
+            break
+
+        room_to_clean = random.choice(dirty_rooms)
+       
